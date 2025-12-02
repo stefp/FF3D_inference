@@ -134,6 +134,9 @@ def load_ply(file_path):
     return points, labels
 
 def save_ply(file_path, points, labels):
+    # Test cast it to float64 
+    points = points.astype(np.float64)
+
     dtype = [('x', 'f8'), ('y', 'f8'), ('z', 'f8'),
              ('semantic_pred', 'i4'), ('instance_pred', 'i4'), ('score', 'f4'),
              ('semantic_gt', 'i4'), ('instance_gt', 'i4')]
@@ -260,6 +263,9 @@ def main(scan_name, output_dir, iterations):
 
     print(f"🔹 Loading base file: {base_file}")
     base_points, base_labels = load_ply(base_file)
+    # enforce float64 for safety
+    base_points = base_points.astype(np.float64, copy=False) 
+
     all_points = base_points.copy()
     all_labels = base_labels.copy()
     
@@ -277,7 +283,8 @@ def main(scan_name, output_dir, iterations):
             if os.path.exists(pred_file): 
                 print(f"Loading prediction: {pred_file}")
                 pred_points, pred_labels = load_ply(pred_file)
-                
+                pred_points = pred_points.astype(np.float64, copy=False)   
+
                 pred_labels[:, 1] += instance_offset
                 instance_offset = pred_labels[:, 1].max() + 1
                 
@@ -287,12 +294,15 @@ def main(scan_name, output_dir, iterations):
                 print(f"Warning: Prediction file {pred_file} not found, skipping.")
 
         blue_file = os.path.join(output_dir, f"{scan_name}_bluepoints_{i}.ply")
-
+        
+        final_all_points = all_points.astype(np.float64, copy=False)   # enforce float64
         final_all_points = all_points
         final_all_labels = all_labels
         if os.path.exists(blue_file):
             print(f"🔹 Adding bluepoints: {blue_file}")
             blue_points, blue_labels = load_ply(blue_file)
+            blue_points = blue_points.astype(np.float64, copy=False)
+
             final_all_points = np.vstack((all_points, blue_points))
             final_all_labels = np.vstack((all_labels, blue_labels))
         else:
@@ -301,6 +311,8 @@ def main(scan_name, output_dir, iterations):
         
         offset_path = os.path.join('/workspace/data/ForAINetV2/forainetv2_instance_data', scan_name + '_offsets.npy')
         offsets = np.load(offset_path)
+        final_all_points = final_all_points.astype(np.float64, copy=False)
+
         final_all_points[:, 0] += offsets[0]
         final_all_points[:, 1] += offsets[1]
         final_all_points[:, 2] += offsets[2]
@@ -320,7 +332,7 @@ def main(scan_name, output_dir, iterations):
         file_path = os.path.join(output_dir_round, f"{scan_name}_noisysegments.ply")
         print(f"Computing instance score & saving noisysegments: {file_path}")
         instance_scores = process_and_save_ply(final_all_points, final_all_labels, file_path)
-        threshold = 200
+        threshold = 20 #this is the threshold to remove poor instances (previously was 200 but this was removing good trees)
         print(f"Removing instances with score < {threshold}")
         mask_low_score = (instance_scores < threshold)
         final_all_labels[mask_low_score,1] = -1
