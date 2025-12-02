@@ -9,7 +9,7 @@ dst_root = Path("/workspace/work_dirs/bluepoint_th04fixed_03_priority_test_merge
 
 round_dirs = [
     "round_1",
-    "round_2_after_remove_noise_200"
+    "round_2_after_remove_noise_20"
 ]
 
 for round_dir in round_dirs:
