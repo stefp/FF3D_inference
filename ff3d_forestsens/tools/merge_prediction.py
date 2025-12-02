@@ -301,9 +301,9 @@ def main(scan_name, output_dir, iterations):
         
         offset_path = os.path.join('/workspace/data/ForAINetV2/forainetv2_instance_data', scan_name + '_offsets.npy')
         offsets = np.load(offset_path)
-        #final_all_points[:, 0] += offsets[0]
-        #final_all_points[:, 1] += offsets[1]
-        #final_all_points[:, 2] += offsets[2]
+        final_all_points[:, 0] += offsets[0]
+        final_all_points[:, 1] += offsets[1]
+        final_all_points[:, 2] += offsets[2]
         #cumulative_offset += offsets
 
         output_dir_round = os.path.join(output_dir, f"round_{i}")
@@ -333,9 +333,9 @@ def main(scan_name, output_dir, iterations):
         output_dir_round = os.path.join(output_dir, f"round_{i}")
         output_path = os.path.join(output_dir_round, f"{scan_name}_round{i}.las")
         final_all_points = final_all_points.astype(np.float64)
-        final_all_points[:, 0] += offsets[0]
-        final_all_points[:, 1] += offsets[1]
-        final_all_points[:, 2] += offsets[2]
+        #final_all_points[:, 0] += offsets[0]
+        #final_all_points[:, 1] += offsets[1]
+        #final_all_points[:, 2] += offsets[2]
 
         las_offset = np.floor(offsets)
         print(f"Saving LAS file: {output_path}")
