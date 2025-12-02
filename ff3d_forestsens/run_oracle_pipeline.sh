@@ -16,7 +16,7 @@ OUT_BUCKET="${OUT_BUCKET:-$WORK_DIR/work_dirs/output}"
 INFER_SH="${INFER_SH:-$WORK_DIR/tools/inference_bluepoint_forestsens.sh}"
 
 # Final subdirectory (produced by the inference script)
-FINAL_SUBDIR="${FINAL_SUBDIR:-round_2_after_remove_noise_200}"
+FINAL_SUBDIR="${FINAL_SUBDIR:-round_2_after_remove_noise_20}"
 
 # Execution options
 CLEAR_INPUT_AFTER_RUN="${CLEAR_INPUT_AFTER_RUN:-true}"
